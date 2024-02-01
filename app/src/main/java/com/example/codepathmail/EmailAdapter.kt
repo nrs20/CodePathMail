@@ -1,17 +1,23 @@
 package com.example.codepathmail
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class EmailAdapter(private val emails: List<Email>) : RecyclerView.Adapter<EmailAdapter.ViewHolder>()
+
+//RecyclerView.Adapter: A class that extends RecyclerView.Adapter and is
+// responsible for providing the data to be displayed in the RecyclerView
+class EmailAdapter(private val emails: MutableList<Email>) : RecyclerView.Adapter<EmailAdapter.ViewHolder>()
 {
-    // Provide a direct reference to each of the views within a data item
-    // Used to cache the views within the item layout for fast access
-    // Provide a direct reference to each of the views within a data item
-// Used to cache the views within the item layout for fast access
+//source for line 13: https://stackoverflow.com/questions/59221448/mutablemapkey-boolean-returns-nullable-boolean-for-value-access-with-key
+    //array of bool values the same size as emails. all initially false to show they are unread
+    private val viewClicked = mutableMapOf<Int, Boolean>().withDefault { false }
+
+    //The ViewHolder holds references to the views,
+    // and these references are updated when new data needs to be displayed.
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         // Your holder should contain a member variable for any view that will be set as you render
@@ -21,8 +27,8 @@ class EmailAdapter(private val emails: List<Email>) : RecyclerView.Adapter<Email
         val summaryTextView: TextView
         val dateTextView: TextView
 
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each sub-view
+
+        //called when an instance of the view holder is created
         init {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
@@ -33,6 +39,7 @@ class EmailAdapter(private val emails: List<Email>) : RecyclerView.Adapter<Email
         }
     }
 
+    //
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
@@ -48,11 +55,35 @@ class EmailAdapter(private val emails: List<Email>) : RecyclerView.Adapter<Email
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Get the data model based on position
-        val email = emails.get(position)
+        val email = emails[position]
+
         // Set item views based on views and data model
         holder.senderTextView.text = email.sender
         holder.titleTextView.text = email.title
         holder.summaryTextView.text = email.summary
         holder.dateTextView.text = email.date
+
+        // Set text appearance based on the click status
+        if (viewClicked[position] == true) {
+            // if clicked, unbold
+            holder.senderTextView.setTypeface(null, Typeface.NORMAL)
+            holder.titleTextView.setTypeface(null, Typeface.NORMAL)
+            holder.summaryTextView.setTypeface(null, Typeface.NORMAL)
+            holder.dateTextView.setTypeface(null, Typeface.NORMAL)
+        } else {
+            // if not clicked, bold
+            holder.senderTextView.setTypeface(null, Typeface.BOLD)
+            holder.titleTextView.setTypeface(null, Typeface.BOLD)
+            holder.summaryTextView.setTypeface(null, Typeface.BOLD)
+            holder.dateTextView.setTypeface(null, Typeface.BOLD)
+        }
+
+        holder.itemView.setOnClickListener {
+            // toggle the clicked status
+            viewClicked[position] = !(viewClicked[position] ?: false)
+            // notify the adapter
+            notifyItemChanged(position)
+        }
     }
+
 }

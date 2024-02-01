@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         // Fetch the list of emails
         emails = EmailFetcher.getEmails()
         // Create adapter passing in the list of emails
-        val adapter = EmailAdapter(emails)
+        val adapter = EmailAdapter(emails as MutableList<Email>)
         // Attach the adapter to the RecyclerView to populate items
         emailsRv.adapter = adapter
         // Set layout manager to position the items
